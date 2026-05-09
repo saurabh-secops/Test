@@ -1,41 +1,25 @@
-pipeline {
+pipeline{
     agent any
-    tools {
-        maven 'Maven 3.9.6'  // Adjust to your Jenkins Maven installation
-    }
     stages {
-        stage('Checkout') {
+        stage(build) {
             steps {
-                checkout scm
+                echo "This is build stage"
             }
         }
-        stage('Build') {
+        stage(test) {
             steps {
-                sh 'mvn clean compile'
+                echo "This is test stage"
             }
         }
-        stage('Test') {
+        stage(deploy){
             steps {
-                sh 'mvn test'
+                echo "This is deploy stage"
             }
         }
-        stage('Package') {
+        stage(Completed) {
             steps {
-                sh 'mvn package'
+                echo "All stage completed"
             }
-        }
-        stage('Docker Build') {
-            steps {
-                sh 'docker build -t hello-world-app .'
-            }
-        }
-    }
-    post {
-        always {
-            echo 'Build completed'
-        }
-        failure {
-            echo 'Build failed'
         }
     }
 }
