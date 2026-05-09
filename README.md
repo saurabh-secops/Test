@@ -26,15 +26,27 @@ docker run hello-world-app
 
 ## Jenkins Pipeline
 
-You can use this repository in Jenkins to create a demo build pipeline. A sample Jenkinsfile could include:
+This repository includes a `Jenkinsfile` for a demo build pipeline. Make sure Jenkins has Maven and Docker configured.
+
+If you encounter plugin resolution errors, ensure Maven is properly configured in Jenkins with access to Maven Central repository. You may need to configure proxy settings if behind a firewall.
+
+The included Jenkinsfile uses:
 
 ```groovy
 pipeline {
     agent any
+    tools {
+        maven 'Maven 3.9.6'  // Adjust to your Jenkins Maven installation
+    }
     stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
         stage('Build') {
             steps {
-                sh 'mvn clean package'
+                sh 'mvn clean compile'
             }
         }
         stage('Test') {
@@ -42,10 +54,23 @@ pipeline {
                 sh 'mvn test'
             }
         }
+        stage('Package') {
+            steps {
+                sh 'mvn package'
+            }
+        }
         stage('Docker Build') {
             steps {
                 sh 'docker build -t hello-world-app .'
             }
+        }
+    }
+    post {
+        always {
+            echo 'Build completed'
+        }
+        failure {
+            echo 'Build failed'
         }
     }
 }
